@@ -8,9 +8,9 @@ GRID, WRAP_MODE, WORDS = config.values()
 
 
 def main():
-	for word in WORDS:
+	for word in WORDS[:1]:
 		res = search(
-			grid=GRID,
+			rows=GRID,
 			word=word
 		)
 		print(word, res)
