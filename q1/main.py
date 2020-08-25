@@ -1,4 +1,5 @@
 import sys, yaml
+from super_word_search import search
 
 INPUT_FILE = sys.argv[1]
 with open(INPUT_FILE) as f:
@@ -7,7 +8,12 @@ GRID, WRAP_MODE, WORDS = config.values()
 
 
 def main():
-	pass
+	for word in WORDS:
+		res = search(
+			grid=GRID,
+			word=word
+		)
+		print(word, res)
 
 
 if __name__ == "__main__":
