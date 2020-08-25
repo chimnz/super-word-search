@@ -1,9 +1,4 @@
-import sys, yaml
-INPUT_FILE = sys.argv[1]
-
-with open(INPUT_FILE) as f:
-	config = yaml.load(f, Loader=yaml.FullLoader)
-	GRID, WRAP_MODE, WORDS = config.values()
-
-def search():
+def search(grid, word, wrap=False):
+	"""Search grid for word using specified
+	wrap mode. Return boolean."""
 	pass
