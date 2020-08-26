@@ -1,0 +1,29 @@
+# https://www.simplydaycare.com/support-files/summer-ws-5.pdf
+title: Summer Word Search
+grid:
+- [F, Z, N, D, C, L, I, S, T, E]
+- [A, P ,T, B, E, A, C, H, M, A]
+- [Q, I, J, S, O, T, R, G, L, D]
+- [W, C, H, U, M, S, K, I, T, E]
+- [P, N, V, N, X, P, U, F, B, Y]
+- [K, I, C, E, C, R, E, A, M, U]
+- [G, C, M, J, V, G, Y, H, D, K]
+- [E, O, R, D, N, A, B, W, I, L]
+wrap: NO_WRAP
+words:
+# from webpage
+- BEACH
+- ICECREAM
+- KITE
+- PICNIC
+- SUN
+
+# not from webpage
+- DOUBLE
+- CHEESE
+- BURGER
+
+- FAQ
+- BAY
+- CLISTE
+- CLISTEF

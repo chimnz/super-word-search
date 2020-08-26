@@ -13,8 +13,9 @@ def main():
 	wrap = True if WRAP_MODE == 'WRAP' else False
 	terminal_width = int(os.popen('stty size', 'r').read().split()[1])  # https://stackoverflow.com/a/943921
 	seperator = "-" * terminal_width
+	title_line = "***** {} ({}) *****\n{}".format(TITLE, WRAP_MODE, seperator)
 
-	print(TITLE + '\n' + seperator)
+	print(title_line)
 	for word in WORDS:
 		results = search(GRID, word, wrap)
 		if results:
