@@ -60,7 +60,8 @@ class Grid(object):
 		return i, j
 
 	def __adjacent_positions(self, i, j):
-		"""Return list of positions (hashed coordinates) adjacent to (i,j). #NOTE: Output depends on wrap mode."""
+		"""Return list of positions (hashed coordinates) adjacent to (i,j).
+		#NOTE: Output depends on wrap mode."""
 		# possible adjacent coordinates form square ring (8 positions) around (i,j)
 		possible = [
 			(i-1, j-1), (i-1, j), (i-1, j+1),
@@ -79,20 +80,32 @@ class Grid(object):
 
 		return [ self.__position(*coor) for coor in  adjacent_coordinates ]  # NOTE: return positions, not coordinates
 
-	def find(self, word, pos, idx=0):
-		"""Recursively find letter matches: check if word[idx] is the char (letter) at the specified position."""
+	def find(self, word, pos, idx=0, bucket=None, checked=None, stack=None):
+		"""
+		Recursively find letter matches: check if word[idx] is the char (letter) at the specified position.
+		bucket: empty list defined in outer scope; records word matches if any
+		checked: empty hash table defined in outer scope; tracks previously checked positions, so no repeat positions
+		stack: empty list defined in outer scope; records positions with matching letters
+		"""
 		if idx < len(word):  # search for idx-th char in word
-			if self.letters[pos] == word[idx]:
-				return any( self.find(word, nextpos, idx+1) for nextpos in self.adjacent[pos] )
-			else:
-				return False
-		else:			     # found the last letter
-			return True
+			if self.letters[pos] == word[idx] and not checked.get(pos):
+				checked[pos] = True
+				stack.append(pos)
+				return any( self.find(word, nextpos, idx+1, bucket, checked, stack) for nextpos in self.adjacent[pos] )
+			return False
+		# found the last letter
+		bucket.append( (word, stack) )  # every time a word is found, add it to bucket
+		return True
 
 	def fullSearch(self, word):
-		"""Run the find method for every coordinate in the grid until a word match is found."""
+		"""Run the find method for every position in the grid.
+		Return bucket of found words and their constituent positions."""
+		bucket = []       # words found, [(word, [pos1_1, pos_2_1, ...]), (word, [pos1_2, pos_2_2)]
 		for i,j in self.coordinates():
+			checked = {}  # checked positions, {pos1: True, pos2: True, ...}
+			stack = []    # chars found, [pos1, pos2, ...]
 			pos = self.__position(i, j)
-			if self.find(word, pos):
-				return True
-		return False
+			self.find(word, pos, bucket=bucket, checked=checked, stack=stack)
+		if len(bucket) > 0:
+			return bucket
+		return None

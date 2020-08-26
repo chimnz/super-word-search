@@ -7,8 +7,8 @@ grid:
 # "WRAP" or "NO_WRAP"
 wrap: NO_WRAP
 
-# list of len(P) words
-P: 
+# list of words, P = len(words)
+words: 
 - FED
 - CAB
 - GAD
