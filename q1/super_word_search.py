@@ -6,8 +6,9 @@ def search(rows, word, wrap=False):
 class Grid(object):
 	def __init__(self, rows, wrap):
 		self.rows = rows
-		self.N, self.M = len(rows), len(rows[0])
-		self.wrap = wrap  # True/False
+		self.N = len(rows)    # max value of i
+		self.M = len(rows[0]) # max value of j
+		self.wrap = wrap      # True/False
 
 		hash_tables = self.__computeHashTables()
 		self.coordinates = hash_tables['coordinates'] # position => (i,j)
@@ -39,9 +40,8 @@ class Grid(object):
 
 	def __isInsideGrid(self, i, j):
 		"""Check whether (i,j) is inside the grid."""
-		if 0 <= i < self.N:
-			if 0 <= j < self.M:
-				return True
+		if 0 <= i < self.N and 0 <= j < self.M:
+			return True
 		return False
 
 	def __wrapTransform(self, i, j):
@@ -50,13 +50,13 @@ class Grid(object):
 			return i, j
 		else:
 			if i == -1:        # out-left
-				i = self.M-1   # rightmost
-			elif i == self.M:  # out-right
+				i = self.N-1   # rightmost
+			elif i == self.N:  # out-right
 				i = 0          # leftmost
 			
 			if j == -1:        # out-top
-				j = self.N-1   # bottommost
-			elif j == self.N:  # out-bottom
+				j = self.M-1   # bottommost
+			elif j == self.M:  # out-bottom
 				j = 0          # topmost
 
 		assert self.__isInsideGrid(i, j)  # i,j should now be inside grid

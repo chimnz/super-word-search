@@ -1,0 +1,19 @@
+title: example 1
+
+# N rows of M letters
+grid:
+- [A, B, C]
+- [D, E, F]
+- [G, H, I]
+- [J, K, L]
+
+# "WRAP" or "NO_WRAP"
+wrap: WRAP
+
+# list of words, P = len(words)
+words: 
+- FED
+- CAB
+- AEIJBFG
+- LGEC
+- HIGH
