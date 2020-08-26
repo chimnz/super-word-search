@@ -10,8 +10,8 @@ class Grid(object):
 		self.wrap = wrap  # True/False
 
 		hash_tables = self.__computeHashTables()
-		self.letters = hash_tables["letters"]
-		self.adjacent = hash_tables["adjacent"]
+		self.letters = hash_tables["letters"]    # position => letter
+		self.adjacent = hash_tables["adjacent"]  # position => adjacent_positions
 
 	def coordinates(self):
 		"""Iterate through N by M grid from left to right, top to bottom."""
@@ -19,25 +19,20 @@ class Grid(object):
 			for j in range(self.M):
 				yield i, j
 
-	def __hashCoor(self, i, j):
-		"""Convert index tuple into string of format "{i}-{j}"."""
-		coor = i,j  # tuple
-		hashable_coor = '-'.join(str(idx) for idx in coor)  # string
-		return hashable_coor
+	def __position(self, i, j):
+		"""Convert coordinates into string of format "{i}{j}" which
+		represents position within grid (flattened along axis 0)."""
+		pos = str(i) + str(j)  # "{i}{j}"
+		return pos	# position, key for both self.letters and self.adjacent
 
 	def __computeHashTables(self):
-		letters = {}   # "{i}-{j}": letter
-		adjacent = {}  # "{i}-{j}": adjacent_coordinates (["{i1}-{j1}", "{i2}-{j2}", ...])
+		letters = {}   # "pos": "{letter}"
+		adjacent = {}  # "pos": [adj_pos1, adj_pos2, ...]
 		for i, j in self.coordinates():
-			letter = self.rows[i][j]
-			adjacent_coordinates = self.__adjacent_coordinates(i, j)
-
-			coor = self.__hashCoor(i,j)
-			letters[coor] = letter
-			adjacent[coor] = adjacent_coordinates
-		return {
-			"letters": letters, "adjacent": adjacent
-		}
+			pos = self.__position(i,j)
+			letters[pos] = self.rows[i][j]  # letter at pos
+			adjacent[pos] = self.__adjacent_positions(i, j)  # positions adjacent to pos
+		return { "letters": letters, "adjacent": adjacent }
 
 	def __isInsideGrid(self, i, j):
 		"""Check whether (i,j) is inside the grid."""
@@ -50,25 +45,23 @@ class Grid(object):
 		"""Convert out-of-grid coordinates into their wrapped counterparts."""
 		if self.__isInsideGrid(i, j):
 			return i, j
+		else:
+			if i == -1:        # out-left
+				i = self.M-1   # rightmost
+			elif i == self.M:  # out-right
+				i = 0          # leftmost
+			
+			if j == -1:        # out-top
+				j = self.N-1   # bottommost
+			elif j == self.N:  # out-bottom
+				j = 0          # topmost
 
-		if i == -1:        # out-left
-			i = self.M-1   # rightmost
-		elif i == self.M:  # out-right
-			i = 0          # leftmost
-		
-		if j == -1:        # out-top
-			j = self.N-1   # bottommost
-		elif j == self.N:  # out-bottom
-			j = 0          # topmost
-
-		# i,j should now be inside grid
-		assert self.__isInsideGrid(i, j)
+		assert self.__isInsideGrid(i, j)  # i,j should now be inside grid
 		return i, j
 
-	def __adjacent_coordinates(self, i, j):
-		"""Return list of coordinates adjacent to (i,j).
-		#NOTE: Output depends on wrap mode."""
-		# possible adjacent coordinates form square ring around (i,j)
+	def __adjacent_positions(self, i, j):
+		"""Return list of positions (hashed coordinates) adjacent to (i,j). #NOTE: Output depends on wrap mode."""
+		# possible adjacent coordinates form square ring (8 positions) around (i,j)
 		possible = [
 			(i-1, j-1), (i-1, j), (i-1, j+1),
 			(i, j-1), (i, j+1),
@@ -78,28 +71,28 @@ class Grid(object):
 		if self.wrap:
 			# transform coordinates that are outside the grid into
 			# their corresponding inside-grid, wrap-obeying counterparts
-			adjacent = [self.__wrapTransform(*coor) for coor in possible]
-			assert len(adjacent) == 8
+			adjacent_coordinates = [self.__wrapTransform(*coor) for coor in possible]
+			assert len(adjacent_coordinates) == 8  # wrapping forces max number of adjacent positions
 		else:
-			# remove coordinates that are outside of the grid
-			adjacent = [coor for coor in possible if self.__isInsideGrid(*coor)]
-		return [self.__hashCoor(*coor) for coor in  adjacent]
+			# filter out coordinates that are outside of the grid
+			adjacent_coordinates = [coor for coor in possible if self.__isInsideGrid(*coor)]
 
-	def find(self, word, idx=0, coor="0-0"):
-		"""Recursive solution: check if given coordinates start match current word index."""
+		return [ self.__position(*coor) for coor in  adjacent_coordinates ]  # NOTE: return positions, not coordinates
+
+	def find(self, word, pos, idx=0):
+		"""Recursively find letter matches: check if word[idx] is the char (letter) at the specified position."""
 		if idx < len(word):  # search for idx-th char in word
-			if self.letters[coor] == word[idx]:
-				return any( self.find(word, idx+1, nextcoor) for nextcoor in self.adjacent[coor] )
+			if self.letters[pos] == word[idx]:
+				return any( self.find(word, nextpos, idx+1) for nextpos in self.adjacent[pos] )
 			else:
 				return False
-		else:			   # found the last letter
+		else:			     # found the last letter
 			return True
 
 	def fullSearch(self, word):
-		"""Run the find method for every coordinate in the grid."""
+		"""Run the find method for every coordinate in the grid until a word match is found."""
 		for i,j in self.coordinates():
-			coor = self.__hashCoor(i, j)
-			start_idx = 0
-			if self.find(word, start_idx, coor):
+			pos = self.__position(i, j)
+			if self.find(word, pos):
 				return True
 		return False
