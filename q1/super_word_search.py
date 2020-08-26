@@ -6,12 +6,12 @@ def search(rows, word, wrap=False):
 class Grid(object):
 	def __init__(self, rows, wrap):
 		self.rows = rows
+		self.N, self.M = len(rows), len(rows[0])
 		self.wrap = wrap  # True/False
-		self.N = len(rows)
-		self.M = len(rows[0])
 
-		self.letters = self.__letterHash()
-		self.adjacent = self.__adjacentHash()
+		hash_tables = self.__computeHashTables()
+		self.letters = hash_tables["letters"]
+		self.adjacent = hash_tables["adjacent"]
 
 	def coordinates(self):
 		"""Iterate through N by M grid from left to right, top to bottom."""
@@ -25,16 +25,19 @@ class Grid(object):
 		hashable_coor = '-'.join(str(idx) for idx in coor)  # string
 		return hashable_coor
 
-	def __letterHash(self):
-		"""
-		Return hash table with entries in format: {0-0: letter1, 0-1: letter2, ...} for all coordinates.
-		"""
-		h = {}  # "{i}-{j}": "LETTER"
+	def __computeHashTables(self):
+		letters = {}   # "{i}-{j}": letter
+		adjacent = {}  # "{i}-{j}": adjacent_coordinates (["{i1}-{j1}", "{i2}-{j2}", ...])
 		for i, j in self.coordinates():
 			letter = self.rows[i][j]
+			adjacent_coordinates = self.__adjacent_coordinates(i, j)
+
 			coor = self.__hashCoor(i,j)
-			h[coor] = letter
-		return h
+			letters[coor] = letter
+			adjacent[coor] = adjacent_coordinates
+		return {
+			"letters": letters, "adjacent": adjacent
+		}
 
 	def __isInsideGrid(self, i, j):
 		"""Check whether (i,j) is inside the grid."""
@@ -81,17 +84,6 @@ class Grid(object):
 			# remove coordinates that are outside of the grid
 			adjacent = [coor for coor in possible if self.__isInsideGrid(*coor)]
 		return [self.__hashCoor(*coor) for coor in  adjacent]
-
-	def __adjacentHash(self):
-		"""
-		Return hash table with entries in format: {0-0: adjacent_coordinates1, 0-1: adjacent_coordinates2, ...} for all coordinates.
-		"""
-		h = {}
-		for i,j in self.coordinates():
-			adjacent_coordinates = self.__adjacent_coordinates(i, j)
-			coor = self.__hashCoor(i,j)  # coordinates in string format
-			h[coor] = adjacent_coordinates
-		return h
 
 	def find(self, word, idx=0, coor="0-0"):
 		"""Recursive solution: check if given coordinates start match current word index."""

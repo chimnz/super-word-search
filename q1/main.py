@@ -17,7 +17,7 @@ def main():
 		)
 		print(word, res)
 	'''
-	word = 'BCA'
+	word = 'BCAE'
 	r = search(GRID, word, wrap=True)
 	print(word, r)
 
