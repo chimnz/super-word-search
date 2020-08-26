@@ -8,12 +8,18 @@ GRID, WRAP_MODE, WORDS = config.values()
 
 
 def main():
-	for word in WORDS[:1]:
+	'''
+	for word in WORDS:
 		res = search(
 			rows=GRID,
-			word=word
+			word=word,
+			wrap=True
 		)
 		print(word, res)
+	'''
+	word = 'BCA'
+	r = search(GRID, word, wrap=True)
+	print(word, r)
 
 
 if __name__ == "__main__":
