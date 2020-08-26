@@ -1,8 +1,8 @@
 import sys, yaml, os
 from super_word_search import search
 
-INPUT_FILE = sys.argv[1]
-with open(INPUT_FILE) as f:
+CONFIG_FILE = sys.argv[1]
+with open(CONFIG_FILE) as f:
 	config = yaml.load(f, Loader=yaml.FullLoader)
 TITLE = config['title']
 GRID = config['grid']
