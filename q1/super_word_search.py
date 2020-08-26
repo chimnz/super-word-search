@@ -10,11 +10,12 @@ class Grid(object):
 		self.wrap = wrap  # True/False
 
 		hash_tables = self.__computeHashTables()
-		self.letters = hash_tables["letters"]    # position => letter
-		self.adjacent = hash_tables["adjacent"]  # position => adjacent_positions
+		self.coordinates = hash_tables['coordinates'] # position => (i,j)
+		self.letters = hash_tables['letters']         # position => letter
+		self.adjacent = hash_tables['adjacent']       # position => adjacent_positions
 
-	def coordinates(self):
-		"""Iterate through N by M grid from left to right, top to bottom."""
+	def iter(self):
+		"""Iterate through coordinates in N by M grid from left to right, top to bottom."""
 		for i in range(self.N):
 			for j in range(self.M):
 				yield i, j
@@ -26,13 +27,15 @@ class Grid(object):
 		return pos	# position, key for both self.letters and self.adjacent
 
 	def __computeHashTables(self):
-		letters = {}   # "pos": "{letter}"
-		adjacent = {}  # "pos": [adj_pos1, adj_pos2, ...]
-		for i, j in self.coordinates():
+		coordinates = {}  # pos: (i,j)
+		letters = {}   # pos: letter
+		adjacent = {}  # pos: [adj_pos1, adj_pos2, ...]
+		for i,j in self.iter():
 			pos = self.__position(i,j)
+			coordinates[pos] = i,j
 			letters[pos] = self.rows[i][j]  # letter at pos
 			adjacent[pos] = self.__adjacent_positions(i, j)  # positions adjacent to pos
-		return { "letters": letters, "adjacent": adjacent }
+		return { "coordinates": coordinates, "letters": letters, "adjacent": adjacent }
 
 	def __isInsideGrid(self, i, j):
 		"""Check whether (i,j) is inside the grid."""
@@ -89,19 +92,19 @@ class Grid(object):
 		"""
 		if idx < len(word):  # search for idx-th char in word
 			if self.letters[pos] == word[idx] and not checked.get(pos):
+				stack.append( self.coordinates[pos] )  # append coordinates of current position
 				checked[pos] = True
-				stack.append(pos)
 				return any( self.find(word, nextpos, idx+1, bucket, checked, stack) for nextpos in self.adjacent[pos] )
 			return False
 		# found the last letter
-		bucket.append( (word, stack) )  # every time a word is found, add it to bucket
+		bucket.append( stack )  # every time a word is found, add it to bucket
 		return True
 
 	def fullSearch(self, word):
 		"""Run the find method for every position in the grid.
 		Return bucket of found words and their constituent positions."""
 		bucket = []       # words found, [(word, [pos1_1, pos_2_1, ...]), (word, [pos1_2, pos_2_2)]
-		for i,j in self.coordinates():
+		for i,j in self.iter():
 			checked = {}  # checked positions, {pos1: True, pos2: True, ...}
 			stack = []    # chars found, [pos1, pos2, ...]
 			pos = self.__position(i, j)

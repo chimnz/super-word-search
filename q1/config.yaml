@@ -1,3 +1,5 @@
+title: example 1
+
 # N rows of M letters
 grid:
 - [A, B, C]
@@ -13,3 +15,4 @@ words:
 - CAB
 - GAD
 - BID
+- HIGH
