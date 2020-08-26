@@ -24,7 +24,7 @@ class Grid(object):
 	def __position(self, i, j):
 		"""Convert coordinates into string of format "{i}{j}" which
 		represents position within grid (flattened along axis 0)."""
-		pos = str(i) + str(j)  # "{i}{j}"
+		pos = '{}-{}'.format(i, j)  # "{i}-{j}"
 		return pos	# position, key for both self.letters and self.adjacent
 
 	def __computeHashTables(self):
