@@ -5,9 +5,9 @@ def search(rows, word, wrap=False):
 
 class Grid(object):
 	def __init__(self, rows, wrap):
-		self.rows = rows
-		self.N = len(rows)    # max value of i
-		self.M = len(rows[0]) # max value of j
+		self.rows = rows      # N rows of M letters
+		self.N = len(rows)    # N-1 is max value of i
+		self.M = len(rows[0]) # M-1 is max value of j
 		self.wrap = wrap      # True/False
 
 		hash_tables = self.__computeHashTables()
