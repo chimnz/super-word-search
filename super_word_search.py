@@ -22,18 +22,16 @@ class Grid(object):
 				yield i, j
 
 	def __position(self, i, j):
-		"""Convert coordinates into string of format "{i}{j}" which
-		represents position within grid (flattened along axis 0)."""
-		pos = '{}-{}'.format(i, j)  # "{i}-{j}"
-		return pos	# position, key for both self.letters and self.adjacent
+		"""convert: coordinates (i,j) => position i-j {hash}"""
+		return hash('{}-{}'.format(i,j))
 
 	def __computeHashTables(self):
-		coordinates = {}  # pos: (i,j)
-		letters = {}   # pos: letter
-		adjacent = {}  # pos: [adj_pos1, adj_pos2, ...]
+		coordinates = {}  					# pos: (i,j)
+		letters = {}   						# pos: letter
+		adjacent = {}  						# pos: [adj_pos1, adj_pos2, ...]
 		for i,j in self.iter():
 			pos = self.__position(i,j)
-			coordinates[pos] = i,j
+			coordinates[ pos ] = (i,j)		# coordinates of pos
 			letters[pos] = self.rows[i][j]  # letter at pos
 			adjacent[pos] = self.__adjacent_positions(i, j)  # positions adjacent to pos
 		return { "coordinates": coordinates, "letters": letters, "adjacent": adjacent }
