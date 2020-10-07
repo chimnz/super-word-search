@@ -23,7 +23,7 @@ class Grid(object):
 
 	def __position(self, i, j):
 		"""convert: coordinates (i,j) => position i-j {hash}"""
-		return hash('{}-{}'.format(i,j))
+		return hash( (i,j) )				# position is just a hash of coordinates (i,j)
 
 	def __computeHashTables(self):
 		coordinates = {}  					# pos: (i,j)
